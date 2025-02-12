@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="com.obiscr.chatgpt.settings.EasyCodeState">
+    <option name="projectFiles" value="$PROJECT_DIR$/RealEstateDevelopment/src/main/java/com/RealEstateDevelopment/Controller/AdminController.java;G:/Intellij Idea/RealEstateProject/RealEstateDevelopment/src/main/java/com/RealEstateDevelopment/Entity/Admin.java;G:/Intellij Idea/RealEstateProject/RealEstateDevelopment/src/main/java/com/RealEstateDevelopment/Entity/User.java;G:/Intellij Idea/RealEstateProject/RealEstateDevelopment/src/main/java/com/RealEstateDevelopment/Repository/AdminRepository.java;G:/Intellij Idea/RealEstateProject/RealEstateDevelopment/src/main/java/com/RealEstateDevelopment/Service/AdminService.java;G:/Intellij Idea/RealEstateProject/RealEstateDevelopment/src/main/java/com/RealEstateDevelopment/ServiceImpl/AdminServiceImpl.java;G:/Intellij Idea/RealEstateProject/RealEstateDevelopment/src/main/java/com/RealEstateDevelopment/RealEstateDevelopmentApplication.java;G:/Intellij Idea/RealEstateProject/RealEstateDevelopment/src/test/java/com/RealEstateDevelopment/RealEstateDevelopmentApplicationTests.java;G:/Intellij Idea/RealEstateProject/RealEstateDevelopment/HELP.md;G:/Intellij Idea/RealEstateProject/README.md" />
+  </component>
+</project>
