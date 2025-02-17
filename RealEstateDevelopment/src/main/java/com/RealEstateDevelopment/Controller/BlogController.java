@@ -2,6 +2,7 @@ package com.RealEstateDevelopment.Controller;
 
 import com.RealEstateDevelopment.Entity.Blog;
 import com.RealEstateDevelopment.Service.BlogService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,34 +11,65 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/blog")
-@CrossOrigin("")
+@CrossOrigin("*")
 public class BlogController {
     private static final Logger logger = LoggerFactory.getLogger(BlogController.class);
 
     @Autowired
     private BlogService blogService;
 
-    @PostMapping(value = "/saveBlog")
-    public ResponseEntity<Blog> saveBlog(@RequestPart Blog blog, @RequestParam("image") MultipartFile image) {
+
+
+    @PostMapping(value = "/saveBlog", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<Map<String, Object>> saveBlog(@RequestPart("blog") String blogJson,
+                                                        @RequestParam("image") MultipartFile image) {
+        Map<String, Object> response = new HashMap<>();
         try {
+            // JSON string ko Blog object me convert karo
+            ObjectMapper objectMapper = new ObjectMapper();
+            objectMapper.registerModule(new JavaTimeModule()); // Java 8 Date/Time Support
+
+            Blog blog = objectMapper.readValue(blogJson, Blog.class);
+
             Blog savedBlog = blogService.saveBlog(blog, image);
             logger.info("Blog saved successfully with ID: {}", savedBlog.getId());
-            return new ResponseEntity<>(savedBlog, HttpStatus.CREATED);
+
+            response.put("status", "success");
+            response.put("message", "Blog saved successfully");
+            response.put("blog", savedBlog);
+
+            return new ResponseEntity<>(response, HttpStatus.CREATED);
         } catch (IOException e) {
             logger.error("Error while saving blog image: {}", e.getMessage());
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+
+            response.put("status", "error");
+            response.put("message", "Error while saving blog image");
+            response.put("error", e.getMessage());
+
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         } catch (Exception e) {
             logger.error("Error while saving blog: {}", e.getMessage());
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+
+            response.put("status", "error");
+            response.put("message", "Error while saving blog");
+            response.put("error", e.getMessage());
+
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+
 
     @GetMapping("/getBlogById/{id}")
     public ResponseEntity<Blog> getBlogById(@PathVariable Long id) {

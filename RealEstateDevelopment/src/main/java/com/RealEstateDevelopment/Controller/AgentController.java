@@ -2,11 +2,13 @@ package com.RealEstateDevelopment.Controller;
 
 import com.RealEstateDevelopment.Entity.Agent;
 import com.RealEstateDevelopment.Entity.TemporaryAgent;
+import com.RealEstateDevelopment.Exception.AgentNotFoundException;
 import com.RealEstateDevelopment.Service.AgentService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -131,17 +133,37 @@ public class AgentController {
     }
 
     @DeleteMapping("/deleteAgent/{agentId}")
-    public ResponseEntity<?> deleteAgent(@PathVariable Long agentId) {
+    public ResponseEntity<Map<String, Object>> deleteAgent(@PathVariable Long agentId) {
+        Map<String, Object> response = new HashMap<>();
         try {
             logger.info("Attempting to delete agent with ID: {}", agentId);
             agentService.deleteAgent(agentId);
             logger.info("Agent with ID: {} deleted successfully.", agentId);
-            return ResponseEntity.ok("Agent deleted successfully.");
+
+            response.put("status", "success");
+            response.put("message", "Agent deleted successfully.");
+            response.put("agentId", agentId);
+
+            return ResponseEntity.ok(response);
+        } catch (AgentNotFoundException e) {
+            logger.error("Agent not found with ID: {}", agentId);
+
+            response.put("status", "error");
+            response.put("message", "Agent not found.");
+            response.put("agentId", agentId);
+
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
         } catch (Exception e) {
             logger.error("Error deleting agent with ID: {}: {}", agentId, e.getMessage(), e);
-            return ResponseEntity.badRequest().body("Error deleting agent: " + e.getMessage());
+
+            response.put("status", "error");
+            response.put("message", "Error deleting agent: " + e.getMessage());
+            response.put("agentId", agentId);
+
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }
+
 
     @GetMapping("/getAgentById/{agentId}")
     public ResponseEntity<?> getAgentById(@PathVariable Long agentId) {
